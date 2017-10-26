@@ -6,9 +6,11 @@
   "dependencies": {
     "jasmine": "^2.8.0"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "jasmine-console-reporter": "^2.0.1"
+  },
   "scripts": {
-    "test": "jasmine"
+    "test": "node spec/support/test.js"
   },
   "author": "olishmollie",
   "license": "ISC"
