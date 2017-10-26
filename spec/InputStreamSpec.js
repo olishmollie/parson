@@ -24,12 +24,12 @@ describe("InputStream", () => {
 
   describe("croak()", () => {
     it("throws an error", () => {
-      expect(() => istream.croak("Err")).toThrowError("Err (1:0)");
+      expect(() => istream.croak("Err")).toThrowError("Err near (1:0)");
     })
 
     it("specifies correct line and column", () => {
       istream.next();
-      expect(() => istream.croak("Err")).toThrowError("Err (1:1)");
+      expect(() => istream.croak("Err")).toThrowError("Err near (1:1)");
     })
   })
 

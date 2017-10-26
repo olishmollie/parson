@@ -10,12 +10,13 @@ module.exports = function TokenStream(istream) {
 
   function readNext() {
     readWhile(isWhitespace);
+    let c = istream.peek();
     if (istream.eof()) return null;
-    if (isDigit(istream.peek()))
+    if (isDigit(c))
       return readDigit();
-    if (isOp(istream.peek()))
+    if (isOp(c))
       return readOp();
-    istream.croak("Parsing error");
+    croak("Cannot parse '" + c + "'");
   }
 
   function readDigit() {
@@ -26,7 +27,13 @@ module.exports = function TokenStream(istream) {
   }
 
   function readOp() {
-    return { type: 'op', value: istream.next() };
+    let opstr = istream.next();
+    while (isOp(istream.peek()))
+      opstr += istream.next();
+    if (isOp(opstr))
+      return { type: 'op', value: opstr };
+    else
+      croak("Unknown operation '" + opstr + "'");
   }
 
   function readWhile(predicate) {
@@ -43,7 +50,7 @@ module.exports = function TokenStream(istream) {
   }
 
   function isOp(c) {
-    return /[\+\-\*\/]/.test(c);
+    return /^[\+\-\*\/]$/.test(c);
   }
 
   function next() {

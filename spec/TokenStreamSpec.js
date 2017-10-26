@@ -3,15 +3,14 @@ const TokenStream = require('../TokenStream.js');
 
 describe("TokenStream", () => {
   let istream, tstream;
-
-  beforeEach(() => {
-    istream = InputStream("34 + 34");
-    tstream = TokenStream(istream);
-  })
+  let numToken = {type: 'number', value: 34};
+  let opToken = {type: 'op', value: '+'};
 
   describe("peek()", () => {
+    tstream = TokenStream(InputStream("34 + 34"));
+
     it("returns {type: 'number', value: 34}", () => {
-      expect(tstream.peek()).toEqual({type: 'number', value: 34});
+      expect(tstream.peek()).toEqual(numToken);
     })
 
     it("does not advance stream", () => {
@@ -20,19 +19,22 @@ describe("TokenStream", () => {
   })
 
   describe("next()", () => {
-    let numToken = {type: 'number', value: 34};
-    let opToken = {type: 'op', value: '+'};
+    let tstream = TokenStream(InputStream("34      +         34"));
 
-    it("returns {type: 'number', value: 34}", () => {
+    it("ignores whitespace", () => {
       expect(tstream.next()).toEqual(numToken);
     })
 
-    it ("should advance stream", () => {
-      expect(tstream.next()).toEqual(numToken);
+    it("should advance stream", () => {
       expect(tstream.next()).toEqual(opToken);
       expect(tstream.next()).toEqual(numToken);
       expect(tstream.next()).toBe(null);
     })
-  })
 
+    it("should throw error on invalid operation", () => {
+      let tstream = TokenStream(InputStream("34 ++ 34"));
+      expect(tstream.next()).toEqual(numToken);
+      expect(() => tstream.next()).toThrowError("Unknown operation '++' near (1:5)");
+    })
+  })
 })

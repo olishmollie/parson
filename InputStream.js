@@ -18,7 +18,7 @@ module.exports = function InputStream(input) {
         return peek() == "";
     }
     function croak(msg) {
-        throw new Error(msg + " (" + line + ":" + col + ")");
+        throw new Error(msg + " near (" + line + ":" + col + ")");
     }
 }
 
