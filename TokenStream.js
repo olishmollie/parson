@@ -50,7 +50,7 @@ module.exports = function TokenStream(istream) {
   }
 
   function isOp(c) {
-    return /^[\+\-\*\/]$/.test(c);
+    return /^\+$|^\-$|^\*$|^\/$/.test(c);
   }
 
   function next() {
