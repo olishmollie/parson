@@ -1,0 +1,15 @@
+{
+  "name": "parson",
+  "version": "1.0.0",
+  "description": "",
+  "main": "InputStream.js",
+  "dependencies": {
+    "jasmine": "^2.8.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "jasmine"
+  },
+  "author": "olishmollie",
+  "license": "ISC"
+}
