@@ -1,13 +1,12 @@
-const InputStream = require('../InputStream.js');
 const TokenStream = require('../TokenStream.js');
 
 describe("TokenStream", () => {
-  let istream, tstream;
+  let tstream;
   let numToken = {type: 'number', value: 34};
   let opToken = {type: 'op', value: '+'};
 
   describe("peek()", () => {
-    tstream = TokenStream(InputStream("34 + 34"));
+    tstream = TokenStream("34 + 34");
 
     it("returns {type: 'number', value: 34}", () => {
       expect(tstream.peek()).toEqual(numToken);
@@ -19,7 +18,7 @@ describe("TokenStream", () => {
   })
 
   describe("next()", () => {
-    let tstream = TokenStream(InputStream("34      +         34"));
+    let tstream = TokenStream("34      +     34");
 
     it("ignores whitespace", () => {
       expect(tstream.next()).toEqual(numToken);
@@ -32,7 +31,7 @@ describe("TokenStream", () => {
     })
 
     it("should throw error on invalid operation", () => {
-      let tstream = TokenStream(InputStream("34 ++ 34"));
+      let tstream = TokenStream("34 ++ 34");
       expect(tstream.next()).toEqual(numToken);
       expect(() => tstream.next()).toThrowError("Unknown operation '++' near (1:5)");
     })

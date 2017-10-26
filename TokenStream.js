@@ -1,5 +1,8 @@
-module.exports = function TokenStream(istream) {
+const InputStream = require('./InputStream.js');
+
+module.exports = function TokenStream(input) {
   let current = null;
+  let istream = InputStream(input);
 
   return {
     next: next,
