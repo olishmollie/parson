@@ -4,8 +4,6 @@ module.exports = function TokenStream(input) {
   let current = null;
   let istream = InputStream(input);
 
-  peek();
-
   return { next, peek, eof, croak };
 
   function readNext() {
@@ -45,8 +43,8 @@ module.exports = function TokenStream(input) {
 
   function next() {
     let tmp = current;
-    current = readNext();
-    return tmp;
+    current = null;
+    return tmp || readNext();
   }
 
   function peek() {
