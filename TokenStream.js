@@ -10,8 +10,7 @@ module.exports = function TokenStream(input) {
     readWhile(isWhitespace);
     let c = istream.peek();
     if (istream.eof()) return null;
-    if (isDigit(c))
-      return readDigit();
+    if (isDigit(c)) return readDigit();
     if (isOp(c))
       return { type: 'op', value: istream.next() };
     croak("Cannot parse '" + c + "'");
@@ -21,7 +20,7 @@ module.exports = function TokenStream(input) {
     let dstr = istream.next();
     while (isDigit(istream.peek()))
       dstr += istream.next();
-    return { type: 'number', value: parseFloat(dstr) };
+    return { type: 'number', value: parseInt(dstr) };
   }
 
   function readWhile(predicate) {
