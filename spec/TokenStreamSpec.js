@@ -13,7 +13,7 @@ describe("TokenStream", () => {
     })
 
     it("does not advance stream", () => {
-      expect(tstream.peek()).toEqual(tstream.peek());
+      expect(tstream.peek()).toEqual(numToken);
     })
   })
 
@@ -28,12 +28,6 @@ describe("TokenStream", () => {
       expect(tstream.next()).toEqual(opToken);
       expect(tstream.next()).toEqual(numToken);
       expect(tstream.next()).toBe(null);
-    })
-
-    it("should throw error on invalid operation", () => {
-      let tstream = TokenStream("34 ++ 34");
-      expect(tstream.next()).toEqual(numToken);
-      expect(() => tstream.next()).toThrowError("Unknown operation '++' near (1:5)");
     })
   })
 })
