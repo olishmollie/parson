@@ -1,6 +1,6 @@
 const readline = require('readline');
 
-const Parser = require('./Parser.js');
+const Interpreter = require('./Interpreter.js');
 
 const rl = readline.createInterface({
   input: process.stdin,
@@ -12,7 +12,7 @@ const rl = readline.createInterface({
 rl.prompt();
 
 rl.on('line', (line) => {
-  let p = Parser(line);
-  console.log(p.eval());
+  let i = Interpreter(line);
+  console.log(i.eval());
   rl.prompt();
 });

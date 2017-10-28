@@ -6,38 +6,59 @@ module.exports = function TokenStream(input) {
 
   return { next, peek, eof, croak };
 
+  function NumberToken(value) {
+    return { type: 'number', value: parseInt(value) };
+  }
+
+  function OpToken(value) {
+    return { type: 'op', value };
+  }
+
+  function eofToken() {
+    return { type: 'eof' };
+  }
+
+  function readNumber() {
+    let value = "";
+    while (isNumber(istream.peek())) {
+      value += istream.next();
+    }
+    return NumberToken(value);
+  }
+
   function readNext() {
-    readWhile(isWhitespace);
+    skipWhitespace();
     let c = istream.peek();
-    if (istream.eof()) return null;
-    if (isDigit(c)) return readDigit();
+    if (eof())
+      return eofToken();
+    if (isNumber(c))
+      return readNumber();
     if (isOp(c))
-      return { type: 'op', value: istream.next() };
+      return OpToken(istream.next());
     croak("Cannot parse '" + c + "'");
   }
 
-  function readDigit() {
-    let dstr = istream.next();
-    while (isDigit(istream.peek()))
-      dstr += istream.next();
-    return { type: 'number', value: parseInt(dstr) };
-  }
-
-  function readWhile(predicate) {
-    while (!istream.eof() && predicate(istream.peek()))
-      istream.next();
+  function skipWhitespace() {
+    let str = "";
+    while(isWhitespace(istream.peek())) {
+      str += istream.next();
+    }
   }
 
   function isWhitespace(c) {
     return /\s/.test(c);
   }
 
-  function isDigit(c) {
+  function isIdent(c) {
+    return /\w/.test(c);
+  }
+
+  function isNumber(c) {
     return /\d/.test(c);
   }
 
   function isOp(c) {
-    return /^\+$|^\-$|^\*$|^\/$/.test(c);
+    return /[+\-*\/=]/.test(c);
   }
 
   function next() {

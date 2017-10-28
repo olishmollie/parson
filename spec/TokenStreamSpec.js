@@ -1,33 +1,18 @@
 const TokenStream = require('../TokenStream.js');
 
 describe("TokenStream", () => {
-  let tstream;
-  let numToken = {type: 'number', value: 34};
-  let opToken = {type: 'op', value: '+'};
+  let ts;
 
-  describe("peek()", () => {
-    tstream = TokenStream("34 + 34");
+  describe("identifiers", () => {
 
-    it("returns {type: 'number', value: 34}", () => {
-      expect(tstream.peek()).toEqual(numToken);
+    it("returns a token of type 'ident'", () => {
+      ts = TokenStream("hello");
+      expect(ts.next()).toEqual({ type: 'ident', value: 'hello' });
     })
 
-    it("does not advance stream", () => {
-      expect(tstream.peek()).toEqual(numToken);
-    })
-  })
-
-  describe("next()", () => {
-    let tstream = TokenStream("34      +     34");
-
-    it("ignores whitespace", () => {
-      expect(tstream.next()).toEqual(numToken);
-    })
-
-    it("should advance stream", () => {
-      expect(tstream.next()).toEqual(opToken);
-      expect(tstream.next()).toEqual(numToken);
-      expect(tstream.next()).toBe(null);
+    it("cannot begin with a number", () => {
+      ts = TokenStream("3hello");
+      expect(ts.next).toThrowError("Unexpected char near (1:1)");
     })
   })
 })
