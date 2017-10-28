@@ -3,16 +3,12 @@ const TokenStream = require('../TokenStream.js');
 describe("TokenStream", () => {
   let ts;
 
-  describe("identifiers", () => {
+  describe("numbers", () => {
 
-    it("returns a token of type 'ident'", () => {
-      ts = TokenStream("hello");
-      expect(ts.next()).toEqual({ type: 'ident', value: 'hello' });
+    it("returns a token of type 'number'", () => {
+      ts = TokenStream("3");
+      expect(ts.next()).toEqual({ type: 'number', value: 3 });
     })
 
-    it("cannot begin with a number", () => {
-      ts = TokenStream("3hello");
-      expect(ts.next).toThrowError("Unexpected char near (1:1)");
-    })
   })
 })

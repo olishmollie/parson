@@ -6,17 +6,6 @@ module.exports = function Interpreter(input) {
 
   return { eval };
 
-  function eval() {
-    try {
-      let a = expect('number');
-      let op = expect('op');
-      let b = expect('number');
-      return calc(op, a, b);
-    } catch (err) {
-      return err;
-    }
-  }
-
   function expect(type) {
     let tk = ts.peek();
     if (tk.type === type)
@@ -25,16 +14,42 @@ module.exports = function Interpreter(input) {
       ts.croak("Expected " + type + ", got " + tk.type);
   }
 
+  function term() {
+    return expect('number').value;
+  }
+
+  function eval() {
+    try {
+      let result = term();
+      while (currtok().value === '+' || currtok().value === '-') {
+	let op = expect('op');
+	let operand = term();
+	result = calc(op, result, operand);
+      }
+      return result;
+    } catch (err) {
+      return err;
+    }
+  }
+
+  function currtok() {
+    return ts.peek();
+  }
+
   function calc(op, a, b) {
     switch (op.value) {
-      case '+': return a.value + b.value;
-      case '-': return a.value - b.value;
-      case '*': return a.value * b.value;
+      case '+': return a + b;
+      case '-': return a - b;
+      case '*': return a * b;
       case '/':
-	if (b.value != 0)
-	  return a.value / b.value;
+	if (b != 0)
+	  return a / b;
 	ts.croak("Division by zero");
     }
+  }
+
+  function eof() {
+    return ts.peek().type === 'eof';
   }
 
 }
