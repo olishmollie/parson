@@ -19,6 +19,13 @@ module.exports = function TokenStream(input) {
     }
   }
 
+  function ParenToken(value) {
+    switch(value) {
+      case '(': this.type = 'LParen'; break;
+      case ')': this.type = 'RParen'; break;
+    }
+  }
+
   function eofToken() {
     return { type: 'eof' };
   }
@@ -40,6 +47,8 @@ module.exports = function TokenStream(input) {
       return readNumber();
     if (isOp(c))
       return new OpToken(istream.next());
+    if (isParen(c))
+      return new ParenToken(istream.next());
     croak("Cannot parse '" + c + "'");
   }
 
@@ -56,6 +65,10 @@ module.exports = function TokenStream(input) {
 
   function isIdent(c) {
     return /\w/.test(c);
+  }
+
+  function isParen(c) {
+    return /[\(\)]/.test(c);
   }
 
   function isNumber(c) {

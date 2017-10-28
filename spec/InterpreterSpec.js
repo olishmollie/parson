@@ -28,5 +28,10 @@ describe("Interpreter", () => {
       let interpreter = Interpreter("10 + 2 * 4");
       expect(interpreter.expr()).toEqual(18);
     })
+
+    it("supports nested paren expressions", () => {
+      let interpreter = Interpreter("10 * (100 / (48 + 2))");
+      expect(interpreter.expr()).toEqual(20);
+    })
   })
 })

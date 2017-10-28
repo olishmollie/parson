@@ -15,7 +15,15 @@ module.exports = function Interpreter(input) {
   }
 
   function factor() {
-    return expect('number').value;
+    let result;
+    if (currtok().type === 'LParen') {
+      expect('LParen');
+      result = expr();
+      expect('RParen');
+    } else {
+      result = expect('number').value;
+    }
+    return result;
   }
 
   function term() {
