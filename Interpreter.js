@@ -4,7 +4,7 @@ module.exports = function Interpreter(input) {
 
   let ts = TokenStream(input);
 
-  return { eval };
+  return { expr };
 
   function expect(type) {
     let tk = ts.peek();
@@ -14,17 +14,29 @@ module.exports = function Interpreter(input) {
       ts.croak("Expected " + type + ", got " + tk.type);
   }
 
-  function term() {
+  function factor() {
     return expect('number').value;
   }
 
-  function eval() {
+  function term() {
+    let result = factor();
+    while (currtok().type === 'mul' || currtok().type === 'div') {
+      if (currtok().type === 'mul')
+	result = calc(expect('mul'), result, factor());
+      else if (currtok().type === 'div')
+	result = calc(expect('div'), result, factor());
+    }
+    return result;
+  }
+
+  function expr() {
     try {
       let result = term();
-      while (currtok().value === '+' || currtok().value === '-') {
-	let op = expect('op');
-	let operand = term();
-	result = calc(op, result, operand);
+      while (currtok().type === 'plus' || currtok().type === 'minus') {
+	if (currtok().type === 'plus')
+	  result = calc(expect('plus'), result, term());
+	else if (currtok().type === 'minus')
+	  result = calc(expect('minus'), result, term());
       }
       return result;
     } catch (err) {
@@ -37,11 +49,11 @@ module.exports = function Interpreter(input) {
   }
 
   function calc(op, a, b) {
-    switch (op.value) {
-      case '+': return a + b;
-      case '-': return a - b;
-      case '*': return a * b;
-      case '/':
+    switch (op.type) {
+      case 'plus': return a + b;
+      case 'minus': return a - b;
+      case 'mul': return a * b;
+      case 'div':
 	if (b != 0)
 	  return a / b;
 	ts.croak("Division by zero");

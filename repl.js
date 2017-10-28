@@ -13,6 +13,6 @@ rl.prompt();
 
 rl.on('line', (line) => {
   let i = Interpreter(line);
-  console.log(i.eval());
+  console.log(i.expr());
   rl.prompt();
 });

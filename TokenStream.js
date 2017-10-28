@@ -11,7 +11,12 @@ module.exports = function TokenStream(input) {
   }
 
   function OpToken(value) {
-    return { type: 'op', value };
+    switch (value) {
+      case '+': this.type = 'plus'; break;
+      case '-': this.type = 'minus'; break;
+      case '*': this.type = 'mul'; break;
+      case '/': this.type = 'div'; break;
+    }
   }
 
   function eofToken() {
@@ -34,7 +39,7 @@ module.exports = function TokenStream(input) {
     if (isNumber(c))
       return readNumber();
     if (isOp(c))
-      return OpToken(istream.next());
+      return new OpToken(istream.next());
     croak("Cannot parse '" + c + "'");
   }
 
