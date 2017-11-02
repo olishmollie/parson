@@ -30,4 +30,10 @@ describe("TokenStream", () => {
     expect(ts.next()).toEqual({ type: 'comma', value: ',' });
   })
 
+  it("returns a token of type 'brace'", () => {
+    ts = TokenStream("{}");
+    expect(ts.next()).toEqual({ type: 'lbrace', value: '{' });
+    expect(ts.next()).toEqual({ type: 'rbrace', value: '}' });
+  })
+
 })

@@ -4,7 +4,7 @@ module.exports = function Parser(input) {
 
   let ts = TokenStream(input);
 
-  return { value, array };
+  return { object, string, value, array };
 
   function expect(type) {
     if (currtok().type === type) {
@@ -16,22 +16,39 @@ module.exports = function Parser(input) {
     }
   }
 
+  function string() {
+    expect('quotationMark');
+    str = "";
+    while (currtok(false).type === 'ident') {
+      str += ts.next(false).value;
+    }
+    expect('quotationMark');
+    return str;
+  }
+
   function value() {
     curr = currtok();
-    while (curr.type === 'number' || curr.type === 'quotationMark') {
-      if (curr.type === 'number') {
-	num = expect('number');
-	return num.value;
-      } else if (curr.type === 'quotationMark') {
-	expect('quotationMark');
-	str = "";
-	while (currtok(false).type === 'ident') {
-	  str += ts.next(false).value;
-	}
-	expect('quotationMark');
-	return str;
-      }
+    if (curr.type === 'number') {
+      num = expect('number');
+      return num.value;
+    } else if (curr.type === 'quotationMark') {
+      return string();
     }
+  }
+
+  function object() {
+    result = {};
+    expect('lbrace');
+    key = string();
+    expect('colon');
+    result[key] = value();
+    while (currtok().type === 'comma') {
+      expect('comma');
+      key = string();
+      expect('colon');
+      result[key] = value();
+    }
+    return result;
   }
 
   function array() {

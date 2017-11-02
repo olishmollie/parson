@@ -23,6 +23,15 @@ module.exports = function TokenStream(input) {
     }
   }
 
+  function BraceToken(value) {
+    switch(value) {
+      case '{':
+	return { type: 'lbrace', value };
+      case '}':
+	return { type: 'rbrace', value };
+    }
+  }
+
   function eofToken() {
     return { type: 'eof' };
   }
@@ -44,10 +53,14 @@ module.exports = function TokenStream(input) {
       return readNumber();
     if (isQuote(c))
       return { type: 'quotationMark', value: istream.next() };
+    if (isBrace(c))
+      return BraceToken(istream.next());
     if (isBracket(c))
-      return new BracketToken(istream.next());
+      return BracketToken(istream.next());
     if (isComma(c))
       return { type: 'comma', value: istream.next() };
+    if (isColon(c))
+      return { type: 'colon', value: istream.next() };
     if (isIdent(c))
       return { type: 'ident', value: istream.next() };
     croak("Cannot parse '" + c + "'");
@@ -72,8 +85,16 @@ module.exports = function TokenStream(input) {
     return /[\[\]]/.test(c);
   }
 
+  function isBrace(c) {
+    return /[\{\}]/.test(c);
+  }
+
   function isComma(c) {
     return /\,/.test(c);
+  }
+
+  function isColon(c) {
+    return /\:/.test(c);
   }
 
   function isIdent(c) {
