@@ -8,14 +8,14 @@ module.exports = function InputStream(input) {
     };
     function next() {
         var ch = input.charAt(pos++);
-        if (ch == "\n") line++, col = 0; else col++;
+        if (ch === "\n") line++, col = 0; else col++;
         return ch;
     }
     function peek() {
         return input.charAt(pos);
     }
     function eof() {
-        return peek() == "";
+        return peek() === "";
     }
     function croak(msg) {
         throw new Error(msg + " near (" + line + ":" + col + ")");

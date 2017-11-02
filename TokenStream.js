@@ -10,19 +10,16 @@ module.exports = function TokenStream(input) {
     return { type: 'number', value: parseInt(value) };
   }
 
-  function OpToken(value) {
-    switch (value) {
-      case '+': this.type = 'plus'; break;
-      case '-': this.type = 'minus'; break;
-      case '*': this.type = 'mul'; break;
-      case '/': this.type = 'div'; break;
-    }
+  function StringToken(value) {
+    return { type: 'string', value: value }
   }
 
-  function ParenToken(value) {
+  function BracketToken(value) {
     switch(value) {
-      case '(': this.type = 'LParen'; break;
-      case ')': this.type = 'RParen'; break;
+      case '[':
+	return { type: 'lbracket', value };
+      case ']':
+	return { type: 'rbracket', value };
     }
   }
 
@@ -38,17 +35,21 @@ module.exports = function TokenStream(input) {
     return NumberToken(value);
   }
 
-  function readNext() {
-    skipWhitespace();
+  function readNext(skipSpaces=true) {
+    if (skipSpaces) skipWhitespace();
     let c = istream.peek();
     if (eof())
       return eofToken();
     if (isNumber(c))
       return readNumber();
-    if (isOp(c))
-      return new OpToken(istream.next());
-    if (isParen(c))
-      return new ParenToken(istream.next());
+    if (isQuote(c))
+      return { type: 'quotationMark', value: istream.next() };
+    if (isBracket(c))
+      return new BracketToken(istream.next());
+    if (isComma(c))
+      return { type: 'comma', value: istream.next() };
+    if (isIdent(c))
+      return { type: 'ident', value: istream.next() };
     croak("Cannot parse '" + c + "'");
   }
 
@@ -63,8 +64,20 @@ module.exports = function TokenStream(input) {
     return /\s/.test(c);
   }
 
+  function isQuote(c) {
+    return /\"/.test(c);
+  }
+
+  function isBracket(c) {
+    return /[\[\]]/.test(c);
+  }
+
+  function isComma(c) {
+    return /\,/.test(c);
+  }
+
   function isIdent(c) {
-    return /\w/.test(c);
+    return /[\W\w\s]/.test(c);
   }
 
   function isParen(c) {
@@ -79,14 +92,14 @@ module.exports = function TokenStream(input) {
     return /[+\-*\/=]/.test(c);
   }
 
-  function next() {
-    let tmp = current;
-    current = null;
-    return tmp || readNext();
+  function next(skipSpaces=true) {
+    let tmp = current || readNext(skipSpaces);
+    current = readNext(skipSpaces);
+    return tmp || readNext(skipSpaces);
   }
 
-  function peek() {
-    return current || (current = readNext());
+  function peek(skipSpaces=true) {
+    return current || (current = readNext(skipSpaces));
   }
 
   function eof() {
