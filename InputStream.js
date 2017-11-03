@@ -7,7 +7,7 @@ module.exports = function InputStream(input) {
         croak : croak
     };
     function next() {
-        var ch = input.charAt(pos++);
+        let ch = input.charAt(pos++);
         if (ch === "\n") line++, col = 0; else col++;
         return ch;
     }

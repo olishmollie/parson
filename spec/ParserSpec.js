@@ -41,25 +41,21 @@ describe("Parser", () => {
   })
 
   describe("parse()", () => {
-    let json = fs.readFileSync('spec/support/test.json', {encoding: 'utf8'});
-    console.log(json);
-    let p =  Parser(json)
-    let obj = {
-      one: 1,
-      two: 2,
-      three: 3,
-      four: {
-	five: 5,
-	six: 6,
-	seven: [
-	  7, 8, 9
-	]
-      }
-    }
+    let simpleJson = fs.readFileSync('spec/support/simple.json', {encoding: 'utf8'});
+    let middleJson = fs.readFileSync('spec/support/middle.json', {encoding: 'utf8'});
+    let simpleObj = JSON.parse(simpleJson);
+    let complexObj = JSON.parse(middleJson);
 
-    it("parses test json", () => {
-      expect(p.parse()).toEqual(obj);
+    it("parses simple JSON", () => {
+      let p = Parser(simpleJson);
+      let res = p.parse();
+      expect(res).toEqual(simpleObj);
+    })
+
+    it("parses more complex JSON", () => {
+      let p = Parser(middleJson);
+      let res = p.parse();
+      expect(res).toEqual(complexObj);
     })
   })
-
 })

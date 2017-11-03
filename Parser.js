@@ -29,8 +29,8 @@ module.exports = function Parser(input) {
   function string() {
     expect('quotationMark');
     let str = "";
-    while (currtok(false).type === 'ident') {
-      str += ts.next(false).value;
+    while (currtok(true).type === 'ident') {
+      str += ts.next(true).value;
     }
     expect('quotationMark');
     return str;
@@ -64,6 +64,7 @@ module.exports = function Parser(input) {
       expect('colon');
       result[key] = value();
     }
+    expect('rbrace');
     return result;
   }
 
@@ -75,16 +76,15 @@ module.exports = function Parser(input) {
       expect('comma');
       result.push(value());
     }
+    expect('rbracket');
     return result;
   }
 
-  function currtok(skipSpaces=true) {
-    return ts.peek(skipSpaces);
+  function currtok(inStr=false) {
+    return ts.peek(inStr);
   }
 
   function eof() {
     return ts.peek().type === 'eof';
   }
-
-}
-
+};

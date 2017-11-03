@@ -44,15 +44,17 @@ module.exports = function TokenStream(input) {
     return NumberToken(value);
   }
 
-  function readNext(skipSpaces=true) {
-    if (skipSpaces) skipWhitespace();
+  function readNext(inStr=false) {
+    if (!inStr) skipWhitespace();
     let c = istream.peek();
+    if (isQuote(c))
+      return { type: 'quotationMark', value: istream.next() };
+    if (inStr)
+      return { type: 'ident', value: istream.next() };
     if (eof())
       return eofToken();
     if (isNumber(c))
       return readNumber();
-    if (isQuote(c))
-      return { type: 'quotationMark', value: istream.next() };
     if (isBrace(c))
       return BraceToken(istream.next());
     if (isBracket(c))
@@ -109,18 +111,14 @@ module.exports = function TokenStream(input) {
     return /\d/.test(c);
   }
 
-  function isOp(c) {
-    return /[+\-*\/=]/.test(c);
+  function next(inStr=false) {
+    let tmp = current || readNext(inStr);
+    current = readNext(inStr);
+    return tmp || readNext(inStr);
   }
 
-  function next(skipSpaces=true) {
-    let tmp = current || readNext(skipSpaces);
-    current = readNext(skipSpaces);
-    return tmp || readNext(skipSpaces);
-  }
-
-  function peek(skipSpaces=true) {
-    return current || (current = readNext(skipSpaces));
+  function peek(inStr=false) {
+    return current || (current = readNext(inStr));
   }
 
   function eof() {
