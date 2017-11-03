@@ -4,21 +4,31 @@ module.exports = function Parser(input) {
 
   let ts = TokenStream(input);
 
-  return { object, string, value, array };
+  return { parse, object, string, value, array };
 
   function expect(type) {
-    if (currtok().type === type) {
+    let currtype = currtok().type;
+    if (currtype === type) {
       return ts.next();
     }
     else {
-      throw "Parser error: unexpected " +
-	currtok().type + ", expected " + type;
+      ts.croak("Unexpected '" + currtype + "', expected '" + type);
     }
+  }
+
+  function parse() {
+    let currtype = currtok().type;
+    if (currtype === 'lbracket') {
+      return array();
+    } else if (currtype === 'lbrace') {
+      return object();
+    }
+    ts.croak("Unexpected " + currtype);
   }
 
   function string() {
     expect('quotationMark');
-    str = "";
+    let str = "";
     while (currtok(false).type === 'ident') {
       str += ts.next(false).value;
     }
@@ -27,19 +37,25 @@ module.exports = function Parser(input) {
   }
 
   function value() {
-    curr = currtok();
+    let curr = currtok();
     if (curr.type === 'number') {
-      num = expect('number');
+      let num = expect('number');
       return num.value;
     } else if (curr.type === 'quotationMark') {
       return string();
+    } else if (curr.type === 'lbrace') {
+      return object();
+    } else if (curr.type === 'lbracket') {
+      return array();
+    } else {
+      ts.croak("Parser error");
     }
   }
 
   function object() {
-    result = {};
+    let result = {};
     expect('lbrace');
-    key = string();
+    let key = string();
     expect('colon');
     result[key] = value();
     while (currtok().type === 'comma') {
@@ -52,7 +68,7 @@ module.exports = function Parser(input) {
   }
 
   function array() {
-    result = [];
+    let result = [];
     expect('lbracket');
     result.push(value());
     while (currtok().type === 'comma') {
@@ -72,5 +88,3 @@ module.exports = function Parser(input) {
 
 }
 
-// let p = Parser("[\"Hello World!\", 32]");
-// p.array();

@@ -1,3 +1,5 @@
+const fs = require('fs');
+
 const Parser = require('../Parser.js');
 
 describe("Parser", () => {
@@ -35,6 +37,28 @@ describe("Parser", () => {
 
     it("returns a key value pair", () => {
       expect(p.object()).toEqual({ key: "value", ten: 10 });
+    })
+  })
+
+  describe("parse()", () => {
+    let json = fs.readFileSync('spec/support/test.json', {encoding: 'utf8'});
+    console.log(json);
+    let p =  Parser(json)
+    let obj = {
+      one: 1,
+      two: 2,
+      three: 3,
+      four: {
+	five: 5,
+	six: 6,
+	seven: [
+	  7, 8, 9
+	]
+      }
+    }
+
+    it("parses test json", () => {
+      expect(p.parse()).toEqual(obj);
     })
   })
 
