@@ -3,10 +3,9 @@
   "version": "1.0.0",
   "description": "",
   "main": "InputStream.js",
-  "dependencies": {
-    "jasmine": "^2.8.0"
-  },
+  "dependencies": {},
   "devDependencies": {
+    "jasmine": "^2.8.0",
     "jasmine-console-reporter": "^2.0.1"
   },
   "scripts": {
