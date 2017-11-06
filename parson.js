@@ -1,6 +1,6 @@
 const fs = require('fs');
-
-module.exports = { parse, stringify };
+let Parson = { parse, stringify };
+module.exports = Parson;
 
 function stringify(obj) {
   if (typeof(obj) === 'string') {
@@ -130,11 +130,34 @@ function parse(input) {
       barf('object, array, number, or string');
     }
 
+    function readEscapeChar() {
+      const escapeChars = {
+	'\\': '\\',
+	'"': '"',
+	'/': '/',
+	'b': '\b',
+	'f': '\f',
+	'n': '\n',
+	't': '\t'
+      };
+      expect('escape');
+      if (escapeChars[currChar()]) {
+	return escapeChars[currChar()];
+      } else {
+	barf('escape');
+      }
+    }
+
     function string() {
       expect('quote');
       let str = "";
       while (currType(true) === 'letter') {
-	str += currChar();
+	let c = currChar();
+	if (isBackslash(c)) {
+	  str += readEscapeChar();
+	} else {
+	  str += currChar();
+	}
 	advance();
       }
       expect('quote');
@@ -164,6 +187,8 @@ function parse(input) {
 	return 'colon';
       if (isComma(c))
 	return 'comma';
+      if (isBackslash(c))
+	return 'escape';
       if (isLetter(c))
 	return 'letter';
     }
@@ -202,6 +227,10 @@ function parse(input) {
       return /\"/.test(c);
     }
 
+    function isBackslash(c) {
+      return /\\/.test(c);
+    }
+
     function isLetter(c) {
       return /[\w\d\W\s]/.test(c);
     }
@@ -216,7 +245,9 @@ function parse(input) {
   }
 }
 
-// let testJson = fs.readFileSync('spec/support/simple.json', {encoding: 'utf8'});
-// let obj = Parson.parse(testJson);
-// console.log(obj);
+let testJson = fs.readFileSync('spec/support/simple.json', {encoding: 'utf8'});
+let obj = Parson.parse(testJson);
+let obj2 = JSON.parse(testJson);
+console.log(obj);
+console.log(obj2);
 
