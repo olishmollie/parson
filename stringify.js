@@ -1,13 +1,20 @@
-module.exports = function stringify(obj) {
-  if (typeof(obj) === 'string') {
-    return '"' + obj + '"';
-  } else if (typeof(obj) === 'number') {
-    return obj.toString();
-  } else {
-    if (obj.length) {
-      return arrayStr(obj);
-    }
-    return objStr(obj);
+module.exports = stringify;
+
+function stringify(obj) {
+  switch(typeof(obj)) {
+    case 'boolean':
+    case 'number':
+      return obj.toString();
+    case 'string':
+      return '"' + obj + '"';
+    default:
+      if (obj === null) {
+	return "null";
+      } else if (obj.length) {
+	return arrayStr(obj);
+      } else {
+	return objStr(obj);
+      }
   }
 }
 
