@@ -55,9 +55,9 @@ function value() {
   else if (currType() === 'quote')
     result = string();
   else if (currType() === 'digit')
-    result = number();
+    result = parseFloat(number());
   else if (currType() === 'minus')
-    result = number();
+    result = parseFloat(number());
   else if (currType() === 'lbracket')
     result = array();
   else if (currType() === 'lbrace')
@@ -84,26 +84,34 @@ function string() {
   return str;
 }
 
-function number() {
+function number(hasDot=false) {
   let val = 0;
   let digitStr = "";
-  let hasDot = false;
-  let startsWithZero = false;
   let type = currType();
 
-  if (type === 'minus') {
+  // Cannot have minus if hasDot
+  if (type === 'minus' && !hasDot) {
     digitStr += currChar();
     expect('minus');
     type = currType();
   }
 
-  // Decimals less than 1 must start with 0
   if (currChar() === '0') {
     digitStr += currChar();
     advance();
-    digitStr += currChar();
-    expect('dot');
-    hasDot = true;
+    console.log(currChar());
+    if (currChar().toLowerCase() === 'e') {
+      digitStr += currChar();
+      advance();
+      digitStr += number();
+      return digitStr;
+    } else if (currChar() === '.') {
+      digitStr += currChar();
+      advance();
+      hasDot = true;
+    } else {
+      barf('dot');
+    }
     type = currType();
   } else if (currChar() === '.') {
     barf('number');
@@ -122,7 +130,17 @@ function number() {
     type = currType();
   }
 
-  return parseFloat(digitStr);
+  if (currChar().toLowerCase() === 'e') {
+    digitStr += currChar();
+    advance();
+    if (currChar() === '+' || currChar() === '-') {
+      digitStr += currChar();
+      advance();
+    }
+    digitStr += number(true);
+  }
+
+  return digitStr;
 }
 
 function readFalse() {

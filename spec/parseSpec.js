@@ -73,6 +73,11 @@ describe("parse()", () => {
       json = "[ 1.234, 5.67890, -0.2 ]";
       expect(parse(json)).toEqual([ 1.234, 5.6789, -0.2 ]);
     })
+
+    it ("correctly parses a number with mantissa", () => {
+      json = "[ 1e-4, 0e4, 4.43E-3, -0.299e3 ]";
+      expect(parse(json)).toEqual([ 0.0001, 0, .00443, -299 ]);
+    })
   })
 
   describe("special values", () => {
