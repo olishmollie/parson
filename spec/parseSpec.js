@@ -42,8 +42,8 @@ describe("parse()", () => {
     })
 
     it ("correctly parses strings with numbers, commas and colons", () => {
-      json = "[ \"this string has numbers: 10 5879 23, commas, and colons::\" ]";
-      expect(parse(json)).toEqual([ "this string has numbers: 10 5879 23, commas, and colons::" ]);
+      json = "[ \"this string has numbers: 10 5879.5104 -23, commas, and colons::\" ]";
+      expect(parse(json)).toEqual([ "this string has numbers: 10 5879.5104 -23, commas, and colons::" ]);
     })
 
     it ("correctly parses a string with escape characters", () => {
@@ -60,8 +60,18 @@ describe("parse()", () => {
     })
 
     it ("correctly parses multi-digit integers", () => {
-      json = "[ 1400, 59874, 12, 003 ]";
+      json = "[ 1400, 59874, 12, 3 ]";
       expect(parse(json)).toEqual([ 1400, 59874, 12, 3 ]);
+    })
+
+    it ("correctly parses negative integers", () => {
+      json = "{ \"negative one\": -1 }";
+      expect(parse(json)).toEqual({ "negative one": -1 });
+    })
+
+    it ("correctly parses numbers with decimal precision", () => {
+      json = "[ 1.234, 5.67890, -0.2 ]";
+      expect(parse(json)).toEqual([ 1.234, 5.6789, -0.2 ]);
     })
   })
 
@@ -115,6 +125,18 @@ describe("parse()", () => {
     it ("throws an error for a simple incorrect string", () => {
       json = "[ \"an unclosed string literal ]";
       expect(() => parse(json)).toThrow("Unexpected 'eof' at line 1, col 31");
+    })
+
+    it ("throws an error for an incorrect number", () => {
+      json = "[ -002 ]";
+      expect(() => parse(json)).toThrow("Unexpected '0' at line 1, col 4");
+    })
+
+    it ("throws an error for an incorrect decimal", () => {
+      json = "[ .2 ]";
+      expect(() => parse(json)).toThrow("Unexpected '.' at line 1, col 2");
+      json = "[ 1.2.3 ]";
+      expect(() => parse(json)).toThrow("Unexpected '.' at line 1, col 5");
     })
 
     it ("throws an error for unexpected tokens", () => {

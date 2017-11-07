@@ -1,6 +1,6 @@
 let len, pos, line, col, input;
 
-module.exports = function parse(json) {
+module.exports = function (json) {
   input = json;
   len = json.length;
   pos = 0, line = 1, col = 0;
@@ -56,6 +56,8 @@ function value() {
     result = string();
   else if (currType() === 'digit')
     result = number();
+  else if (currType() === 'minus')
+    result = number();
   else if (currType() === 'lbracket')
     result = array();
   else if (currType() === 'lbrace')
@@ -85,11 +87,42 @@ function string() {
 function number() {
   let val = 0;
   let digitStr = "";
-  while (currType() === 'digit') {
+  let hasDot = false;
+  let startsWithZero = false;
+  let type = currType();
+
+  if (type === 'minus') {
+    digitStr += currChar();
+    expect('minus');
+    type = currType();
+  }
+
+  // Decimals less than 1 must start with 0
+  if (currChar() === '0') {
     digitStr += currChar();
     advance();
+    digitStr += currChar();
+    expect('dot');
+    hasDot = true;
+    type = currType();
+  } else if (currChar() === '.') {
+    barf('number');
   }
-  return parseInt(digitStr);
+
+  while (type === 'digit' || type === 'dot') {
+    if (type === 'dot') {
+      if (hasDot)
+	barf('digit');
+      digitStr += currChar();
+      hasDot = true;
+    } else {
+      digitStr += currChar();
+    }
+    advance();
+    type = currType();
+  }
+
+  return parseFloat(digitStr);
 }
 
 function readFalse() {
@@ -194,6 +227,10 @@ function charType(c) {
     return 'quote';
   if (isDigit(c))
     return 'digit';
+  if (isDot(c))
+    return 'dot';
+  if (isMinus(c))
+    return 'minus';
   if (isColon(c))
     return 'colon';
   if (isComma(c))
@@ -262,6 +299,14 @@ function isLetter(c) {
 
 function isDigit(c) {
   return /[0-9]/.test(c);
+}
+
+function isDot(c) {
+  return /\./.test(c);
+}
+
+function isMinus(c) {
+  return /\-/.test(c);
 }
 
 function isSpace(c) {
