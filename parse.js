@@ -99,7 +99,6 @@ function number(hasDot=false) {
   if (currChar() === '0') {
     digitStr += currChar();
     advance();
-    console.log(currChar());
     if (currChar().toLowerCase() === 'e') {
       digitStr += currChar();
       advance();
